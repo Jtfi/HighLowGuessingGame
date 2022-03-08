@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<!--
+	This project is about using HTML and JavaScript in conjunction to create a Hi-Lo Game with user input.
+	This program first asks for your name, how high you want the maximum guessing number to be then you guess until you WIN!!!
+	Then it will ask if you want to play again skipping the enter a name section and putting you right back into the game!
+	
+-->
+
+<html>
+	<head>
+		<title>Assignment 01</title>
+		<script type="text/javascript">
+		
+		var changeUiDiv = 0;
+		var name ="";
+		var maximumGuessNum = 0;
+		var randomCorrectNum = 0;
+		var alreadyRandomized = 0;
+		var min = 1;
+		var max = 0;
+		
+		//
+		// Function: nextUi()
+		// Description: Contains the main flow of how th program works in each block different things are done
+		//				like enabling and disabling divs and changing the background color, setting default values
+		//				for when the program loops back around...
+		// Parameters: Nothing
+		// Return Values: Nothing
+		//
+		function nextUi()
+		{
+			if(changeUiDiv == 1)//Enter the max number
+			{
+				document.body.style.backgroundColor = "white";
+				youWin.style.display="none";				//Disable the YOU WIN ui
+				nameInputUi.style.display="none";			//Disable name input ui
+				maximumGuessNumberUi.style.display="block";	//Enable max guess ui
+				
+				//Set value
+				name = usersName.value;
+				
+				
+				prepareMaxGuess();
+			}
+			else if(changeUiDiv == 2)//Hi-Lo main game Ui
+			{
+				
+				maximumGuessNumberUi.style.display="none";	//Disable the display of entering a max guess
+				hiLoGameUi.style.display="block";			//Enable the Hi-Lo Ui
+				
+				//Set Values
+				maximumGuessNum = usersMaxGuessNumber.value;
+				min = 1;
+				max = maximumGuessNum;
+				alreadyRandomized = 0;
+				
+				
+				prepareHiLoGame();
+				numberRange.innerHTML = "Your allowable guessing range is any value between 1 and "+maximumGuessNum+" ";
+			}
+			else if(changeUiDiv == 3)//YOU WIN!!!
+			{
+				hiLoGameUi.style.display="none"; 	// Disable the Hi Lo Game
+				youWin.style.display="block";		// Enable the You Win  
+				
+				document.body.style.backgroundColor = "green";
+				
+				youWin.innerHTML = "You Win!! You guessed the number!!<input id='div1' type='button' value='Play Again' onclick='nextUi();' />";
+			
+				//Looping mechanism
+				changeUiDiv = 1;
+			}
+		
+		}	
+		
+		
+		//
+		// Function: guessingGame()
+		// Description: This program creates a random number and shows errors if you guess the wrong number and 
+		//				brings you to the YOUWIN div if you succeed in guessing the right number
+		// Parameters: Nothing
+		// Return Values: Nothing
+		//
+		function guessingGame()
+		{
+			var guess = guessNum.value;//maybe do a loop, only thing i can think of rn
+			var counter = 0;
+			
+			if(alreadyRandomized == 0)
+			{
+			
+				randomCorrectNum = Math.floor((Math.random() * Number(maximumGuessNum)) + 1);
+				alreadyRandomized++;
+			}
+			
+			inputErrorMessage.innerHTML = "";
+			
+			var numbers = /^[a-zA-Z]+$/;
+			
+			if(guess.match(numbers))
+			{
+				if((Number(guess) > Number(max)) || (Number(guess) < min)) //If the user input is not in the range
+				{
+					inputErrorMessage.innerHTML = "Outside of range";
+				}
+				else
+				{
+				
+					
+					if(Number(guess) == randomCorrectNum) //If the user guessed the right number
+					{
+						changeUiDiv++;
+						nextUi();
+					}
+					else //If the user did not get the right number
+					{
+						if(Number(guess) > randomCorrectNum) //If your guess is higher
+						{
+							max = Number(guess) - 1;
+							numberRange.innerHTML = "Your allowable guessing range is any value between "+min+" and "+max+" ";
+						}
+						else if(guess < randomCorrectNum)//If your guess is lower
+						{
+							min = Number(guess) + 1;
+							numberRange.innerHTML = "Your allowable guessing range is any value between "+min+" and "+max+" ";
+						}
+					}
+					
+				}
+			}
+			else //If the user entered no numbers
+			{	
+				inputErrorMessage.innerHTML = "Enter a Number";
+			}
+			
+			
+	
+		}
+		
+		
+		//
+		// Function: nameValidating()
+		// Description: This function validates the name inputted by the user. If what they entered was valid
+		//				go to the next div, if it isn't valid make them type it in again and print an error message
+		// Parameters: Nothing
+		// Return Values: Nothing
+		//
+		function nameValidating()
+		{
+			var validName = false;
+			var chosenName = usersName.value;
+				
+			nameErrorMessage.innerHTML ="";
+			
+			if((chosenName.trim()).length == 0)
+			{
+				nameErrorMessage.innerHTML = "Your name <b>CANNOT</b> be blank";
+			}
+			else
+			{
+		
+				var lettersNSpaces = /^[A-Za-z\s]+$/;
+				
+				if(chosenName.match(lettersNSpaces))
+				{
+					validName = true;
+				}
+				else
+				{
+					nameErrorMessage.innerHTML = "Your name must be made of <b>NON-BLANK</b> characters <u>only</u>.";
+				}
+			}
+			
+			if(validName == true)
+			{
+				changeUiDiv++;
+				nextUi();
+			}
+		}
+		
+		
+		//
+		// Function: maxGuessNumValidating()
+		// Description: This function validates the users Input of their max guess number if the user 
+		//				inputs a valid number the ui takes them to the next div if not, it prints an error to the 
+		// 				screen
+		// Parameters: Nothing
+		// Return Values: Nothing
+		//
+		function maxGuessNumValidating()
+		{
+			var validMaxNum = false;
+			var maxGuessNum = usersMaxGuessNumber.value;
+			
+			guessErrorMessage.innerHTML ="";
+			
+			var numbers = /^[0-9]+$/;
+			
+			if(maxGuessNum.match(numbers))
+			{
+			
+				if(maxGuessNum > 1)
+				{
+					validMaxNum = true;
+				}
+				else
+				{
+					guessErrorMessage.innerHTML = "Your number <b>must</b> be greater than 1";
+				}
+				
+			}
+			else
+			{
+					guessErrorMessage.innerHTML = "You <b>must</b> enter a number";
+			}
+		
+		
+			if(validMaxNum == true)
+			{
+				changeUiDiv++;
+				nextUi();
+			}
+			
+		}
+		
+		
+		//
+		// Function: perpareMaxGuess()
+		// Description: This function prepares the div for the users max guess, it has all the buttons and text boxex available 
+		//				to the user.
+		// Parameters: Nothing
+		// Return Values: Nothing
+		//
+		function prepareMaxGuess()
+		{
+			maximumGuessNumberUi.innerHTML = "What should the maximum guess number be "+name+"? <input id='usersMaxGuessNumber' type='text';'/> <div id='guessErrorMessage' style='color:red;'></div> <br/> <input id='div3' type='button' value='Submit' onclick='maxGuessNumValidating();' /> ";
+		}
+		
+		//
+		// Function: perpareHiLoGame()
+		// Description: This function prepares the div for the hi lo game, it has all the buttons and text boxex available 
+		//				to the user.
+		// Parameters: Nothing
+		// Return Values: Nothing
+		//
+		function prepareHiLoGame()
+		{
+			
+			hiLoGameUi.innerHTML = "Guess the correct number "+name+": <input id='guessNum' type='text';'/> <div id='numberRange' style='color:black;'> </div> <div id='inputErrorMessage' style='color:red;'></div> <br/> <input id='hellyeah' type='button' value='Make this Guess' onclick='guessingGame();' /> "; 
+		}
+		
+		</script>
+	</head>
+	
+	<body>
+	<div id="nameInputUi">
+	<table id="inputNameTable">
+		<tr>
+			<td>What is your name?</td>
+			<td><input id="usersName" type="text"/></td>
+			<td><div id="nameErrorMessage" style="color:red;"></div></td>
+		</tr>
+			<td colspan="3" align="center"><input id="checkInput" type="button" value="Submit" onclick="nameValidating();" /></td>
+			<td>&nbsp;</td>
+	</table>
+	</div>
+	<div id="maximumGuessNumberUi" style="display:none"></div>
+		
+	<div id="hiLoGameUi" style="display:none"></div>
+	
+	<div id="youWin"style="display:none"></div>
+	
+	</body>
+</html>

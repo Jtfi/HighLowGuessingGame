@@ -97,7 +97,7 @@
 			
 			var numbers = /^[a-zA-Z]+$/;
 			
-			if(guess.match(numbers))
+			if(!guess.match(numbers))
 			{
 				if((Number(guess) > Number(max)) || (Number(guess) < min)) //If the user input is not in the range
 				{
